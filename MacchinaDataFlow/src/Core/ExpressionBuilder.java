@@ -9,6 +9,8 @@ import Models.AbstractExpression;
 import Models.ArithmeticExpression;
 import Models.AbstractExpression.Operator;
 
+import Core.Interfaces.IExpressionTokenStreamer;
+
 
 public class ExpressionBuilder implements IExpressionTokenStreamer {
 	
