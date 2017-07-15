@@ -1,5 +1,6 @@
 package Core;
 
+import Core.Interfaces.IExpressionEvaluator;
 import Models.AbstractExpression.Operator;
 import Models.ArithmeticExpression;
 
