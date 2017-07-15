@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import Core.ExpressionBuilder;
 import Core.ExpressionEvaluator;
-import Core.IExpressionEvaluator;
+import Core.Interfaces.IExpressionEvaluator;
 import Models.ArithmeticExpression;
 import Models.AbstractExpression.Operator;
 
