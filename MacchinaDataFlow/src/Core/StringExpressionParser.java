@@ -1,5 +1,6 @@
 package Core;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -8,11 +9,22 @@ import java.util.concurrent.Executors;
 
 import Core.Interfaces.IExpressionTokenStreamer;
 import Models.AbstractExpression.Operator;
+import Models.ArithmeticExpression;
 
 
 public class StringExpressionParser {
 	
     private List<IExpressionTokenStreamer> listeners = new ArrayList<IExpressionTokenStreamer>();
+    
+    private String filePath;
+    
+    
+    public StringExpressionParser() { }
+    
+    public StringExpressionParser(String filePath) {
+    	this.filePath = filePath;
+    }
+    
 
     public void addListener(IExpressionTokenStreamer toAdd) {
         listeners.add(toAdd);
@@ -35,6 +47,37 @@ public class StringExpressionParser {
             listener.streamEnded();
     }
 
+    
+    public void parse() {
+    	if (filePath == null || filePath.isEmpty()) {
+    		System.out.println("Error: 'filePath' is empty");
+    		return;
+    	}
+    		
+    	try {
+    		Scanner scanner = new Scanner(new File(filePath));
+    		if (!scanner.hasNextLine()){
+        		System.out.println("Error: " + filePath + " is empty.");
+        		scanner.close();
+        		return;
+        	}
+    		
+    		String line = scanner.nextLine();
+    		scanner.close();
+    		
+    		if (!ArithmeticExpression.IsValid(line)) {
+    			System.out.println("Error: " + line + " is an invalid expression.");
+    			return;
+    		}
+    		
+    		parse(line);
+    		
+    	} catch (Exception e) {
+    		System.out.println("Error: " + filePath + " doesn't exist.");
+    	}
+    	
+    }
+    
 	
 	public void parse(String value)
 	{	

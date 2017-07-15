@@ -40,4 +40,13 @@ public class ArithmeticExpression extends AbstractExpression {
 		this.secondValue = secondValue;
 	}
 	
+	
+	/*
+	 * Static method
+	 */
+	
+	public static boolean IsValid(String expression) {
+		return expression.matches("^[ 0-9,.+*-/]+$");
+	}
+	
 }

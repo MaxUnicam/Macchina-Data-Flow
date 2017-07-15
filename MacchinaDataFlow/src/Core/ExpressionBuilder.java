@@ -38,17 +38,14 @@ public class ExpressionBuilder implements IExpressionTokenStreamer {
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.submit(() -> {
 			while (!isStreamFinished || !expressionTokensQueue.isEmpty()) {
-				Wait(10);
-				
 				synchronized (this) {
-					System.out.println("La coda nel ciclo è lunga: " + expressionTokensQueue.size());
 					analyzeToken();
 				}
 				
+				Wait(10);
 			}
 			
 		});
-		this.parser.parse("* + 3.14 3.67 / 4.56 22.4");
 	}
 	
 	
