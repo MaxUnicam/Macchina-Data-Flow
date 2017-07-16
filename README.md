@@ -3,7 +3,7 @@
 Progetto in Java per la parte di laboratorio dell'esame di Sistemi Operativi.
 
 
-### Testo:
+### Testo della consegna:
 
 Si realizzi un programma che simula il funzionamento di una macchina data flow per la valutazioni di espressioni aritmetiche. L’espressione è memorizzata in un file in forma polacca (notazione prefissa). Il formato è il seguente:
 
