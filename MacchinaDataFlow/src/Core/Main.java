@@ -10,40 +10,26 @@ public class Main {
 	
 	public static void main(String [] args)
 	{
-		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		
-//		StringExpressionParser parser = new StringExpressionParser();
-//		ExpressionBuilder builder = new ExpressionBuilder(parser);
-//		builder.startListening();
-//		parser.parse("* + 3.14 3.67 / 4.56 22.4");
-//		while (!builder.canBuild()) {
-//			Wait(1);
-//		}
-		
+		// Initialization
 		StringExpressionParser parser = new StringExpressionParser("./src/Resources/expression.txt");
 		ExpressionBuilder builder = new ExpressionBuilder(parser);
+		ExpressionEvaluator evaluator = new ExpressionEvaluator();
+		
+		// Start builder listening for token's availability 
 		builder.startListening();
+		
+		Timestamp start = new Timestamp(System.currentTimeMillis());
+		
 		parser.parse();
-		while (!builder.canBuild()) {
-			Wait(1);
-		}
+		while (!builder.canBuild()) { continue; }
 		
 		AbstractExpression exp = builder.build();
-		
-		ExpressionEvaluator evaluator = new ExpressionEvaluator();
 		Double result = evaluator.evaluate((ArithmeticExpression)exp);
 		
 		Timestamp end = new Timestamp(System.currentTimeMillis());
-		long diff = end.getTime() - timestamp.getTime();
-		System.out.println("Abbiamo impiegato " + diff + " millisecondi");
-		
-		System.out.println("Il risultato è: " + result);
-	}
-	
-	private static void Wait(int milliseconds) {
-		try {
-			Thread.sleep(milliseconds);
-		} catch (InterruptedException e) { e.printStackTrace(); }
+		System.out.println("Risultato dell'espressione: " + result + ".");
+		System.out.println("Numero di thread utilizzati: 2.");
+		System.out.println("Tempo impiegato: " + (end.getTime() - start.getTime()) + " millisecondi.");
 	}
 	
 }
