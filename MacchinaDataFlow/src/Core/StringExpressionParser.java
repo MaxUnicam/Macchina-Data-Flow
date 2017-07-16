@@ -59,18 +59,19 @@ public class StringExpressionParser {
     }
 
     
-    public void parse() {
+    public boolean parse() {
     	if (expressionLine == null || expressionLine.isEmpty()) {
     		System.out.println("Error: 'expressionLine' is empty");
-    		return;
+    		return false;
     	}
 
 		if (!ArithmeticExpression.IsValid(expressionLine)) {
 			System.out.println("Error: " + expressionLine + " is an invalid expression.");
-			return;
+			return false;
 		}
 		
 		parse(expressionLine);
+		return true;
     }
     
 	

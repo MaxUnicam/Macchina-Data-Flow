@@ -28,7 +28,7 @@ public class Main {
 		
 		Timestamp end = new Timestamp(System.currentTimeMillis());
 		System.out.println("Risultato dell'espressione: " + result + ".");
-		System.out.println("Numero di thread utilizzati: 2.");
+		System.out.println("Numero di thread utilizzati: 3.");
 		System.out.println("Tempo impiegato: " + (end.getTime() - start.getTime()) + " millisecondi.");
 	}
 	

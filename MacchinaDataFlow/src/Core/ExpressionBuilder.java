@@ -40,7 +40,10 @@ public class ExpressionBuilder implements IExpressionBuilder, IExpressionTokenSt
 	 * Fa partire l'event loop del builder. 
 	 */
 	public void startListening() {
-		this.parser.addListener(this);
+		if (parser == null)
+			return;
+		
+		parser.addListener(this);
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.submit(() -> {
 			while (!isStreamFinished || !expressionTokensQueue.isEmpty()) {

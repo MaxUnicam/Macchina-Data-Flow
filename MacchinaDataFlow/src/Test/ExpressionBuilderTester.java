@@ -2,38 +2,42 @@ package Test;
 
 import static org.junit.Assert.*;
 
-import java.math.BigDecimal;
-
 import org.junit.Test;
 
 import Core.ExpressionBuilder;
 import Core.ExpressionEvaluator;
+import Core.StringExpressionParser;
 import Core.Interfaces.IExpressionEvaluator;
 import Models.ArithmeticExpression;
 import Models.AbstractExpression.Operator;
 
 
-public class ExpressionBuilderTester {
+public class ExpressionBuilderTester extends BaseTester {
 
 	@Test
 	public void test() {
 		IExpressionEvaluator evaluator = new ExpressionEvaluator();
 		
-		ArithmeticExpression exp = expressionOne();
+		ArithmeticExpression exp = BuildExpressionOne();
 		Double result = evaluator.evaluate(exp);
 		assertTrue(result == 15);
 
-		exp = expressionTwo();
+		exp = BuildExpressionTwo();
 		result = evaluator.evaluate(exp);
 		assertTrue(Equals(result, 1.38632142));
 		
-		exp = expressionThree();
+		exp = BuildExpressionThree();
 		result = evaluator.evaluate(exp);
 		assertTrue(result == 5);
+		
+		exp = BuildExpressionFour();
+		result = evaluator.evaluate(exp);
+		assertTrue(Equals(result, 1.38632142));
 	}
+
 	
 	// * + / 5 3 1 / + 8 2 - 3 1	= 15
-	private ArithmeticExpression expressionOne() {
+	private ArithmeticExpression BuildExpressionOne() {
 		ExpressionBuilder builder = new ExpressionBuilder();
 		builder.addOperator(Operator.Multiplication);
 		builder.addOperator(Operator.Sum);
@@ -52,7 +56,7 @@ public class ExpressionBuilderTester {
 	}
 	
 	// * + 3.14 3.67 / 4.56 22.4	= 1.3863
-	private ArithmeticExpression expressionTwo() {
+	private ArithmeticExpression BuildExpressionTwo() {
 		ExpressionBuilder builder = new ExpressionBuilder();
 		builder.addOperator(Operator.Multiplication);
 		builder.addOperator(Operator.Sum);
@@ -65,7 +69,7 @@ public class ExpressionBuilderTester {
 	}
 	
 	// + 4 1	= 5
-	private ArithmeticExpression expressionThree() {
+	private ArithmeticExpression BuildExpressionThree() {
 		ExpressionBuilder builder = new ExpressionBuilder();
 		builder.addOperator(Operator.Sum);
 		builder.addValue(Double.valueOf(4));
@@ -74,12 +78,14 @@ public class ExpressionBuilderTester {
 	}
 	
 	
-	private boolean Equals(double firstValue, double secondValue) {
-		BigDecimal aa = new BigDecimal(firstValue);
-		BigDecimal bb = new BigDecimal(secondValue);
-		aa = aa.setScale(4, BigDecimal.ROUND_DOWN);
-		bb = bb.setScale(4, BigDecimal.ROUND_DOWN);
-		return aa.equals(bb);
+	private ArithmeticExpression BuildExpressionFour() {
+		StringExpressionParser parser = new StringExpressionParser();
+		ExpressionBuilder builder = new ExpressionBuilder(parser);
+		builder.startListening();
+		parser.parse("* + - 4.14 * 1 1 + 2.6 1.07 / 4.56 + * * 2 + - / + 200 * 4 * 20 10 / 200 1 * 0.1 2 0.7 / 10 5 0.4");
+		while (!builder.canBuild())
+			continue;
+		return (ArithmeticExpression)builder.build();
 	}
 	
 }
