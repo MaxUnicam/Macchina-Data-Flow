@@ -65,16 +65,15 @@ public class StringExpressionParser {
     		return false;
     	}
 
-		if (!ArithmeticExpression.IsValid(expressionLine)) {
-			System.out.println("Error: " + expressionLine + " is an invalid expression.");
-			return false;
-		}
+      if (!ArithmeticExpression.IsValid(expressionLine)) {
+        System.out.println("Error: " + expressionLine + " is an invalid expression.");
+        return false;
+      }
 		
-		parse(expressionLine);
-		return true;
-    }
-    
-	
+      parse(expressionLine);
+      return true;
+		}
+  
 	public void parse(String value)
 	{	
 		Scanner scanner = new Scanner(value);
