@@ -8,20 +8,23 @@ import java.util.concurrent.Executors;
 import Models.AbstractExpression;
 import Models.ArithmeticExpression;
 import Models.AbstractExpression.Operator;
-
+import Core.Interfaces.IExpressionBuilder;
 import Core.Interfaces.IExpressionTokenStreamer;
 
 
-public class ExpressionBuilder implements IExpressionTokenStreamer {
+public class ExpressionBuilder implements IExpressionBuilder, IExpressionTokenStreamer {
 	
+	private StringExpressionParser parser;
 	private AbstractExpression baseExpression;
 	
 	private Queue<Object> expressionTokensQueue;
 	
 	private boolean isStreamFinished = false;
-	
-	private StringExpressionParser parser;
 
+	
+	/*
+	 * Constructors
+	 */
 	
 	public ExpressionBuilder() {
 		expressionTokensQueue = new LinkedList<>();
@@ -31,8 +34,11 @@ public class ExpressionBuilder implements IExpressionTokenStreamer {
 		this.parser = parser;
 		expressionTokensQueue = new LinkedList<>();
 	}
+
 	
-	
+	/**
+	 * Fa partire l'event loop del builder. 
+	 */
 	public void startListening() {
 		this.parser.addListener(this);
 		ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -41,13 +47,73 @@ public class ExpressionBuilder implements IExpressionTokenStreamer {
 				synchronized (this) {
 					analyzeToken();
 				}
-				
-				Wait(10);
 			}
-			
 		});
 	}
 	
+	
+	/*
+	 * IExpressionBuilder interface methods
+	 */
+	
+	@Override
+	public void addOperator(Operator operator) {
+		if (baseExpression == null) {
+			baseExpression = new ArithmeticExpression(operator);
+			return;
+		}
+		
+		addOperator(baseExpression, operator);
+	}
+	
+	@Override
+	public void addValue(Double value) {
+		if (baseExpression == null)
+			return;
+		
+		addValue(baseExpression, value);
+	}
+	
+	@Override
+	public AbstractExpression build() {
+		return baseExpression;
+	}
+	
+	@Override
+	synchronized public boolean canBuild() {
+		return isStreamFinished && expressionTokensQueue.isEmpty();
+	}
+	
+	
+	/*
+	 * IExpressionTokenStreamer interface methods
+	 */
+	
+	@Override
+	public void operatorAvailable(Operator operator) {
+		synchronized(expressionTokensQueue) {
+			expressionTokensQueue.add(operator);
+		}
+	}
+
+	@Override
+	public void valueAvailable(Double value) {
+		synchronized(expressionTokensQueue) {
+			expressionTokensQueue.add(value);
+		}		
+	}
+	
+	@Override
+	public void streamEnded() {
+		synchronized(this) {
+			isStreamFinished = true;
+		}
+	}
+	
+	
+	/*
+	 * Private methods
+	 */
 	
 	private void analyzeToken() {
 		synchronized (this) {
@@ -61,44 +127,7 @@ public class ExpressionBuilder implements IExpressionTokenStreamer {
 				addOperator((Operator)token);
 		}
 	}
-	
-	
-	
-	private void Wait(int milliseconds) {
-		try {
-			Thread.sleep(milliseconds);
-		} catch (InterruptedException e) { e.printStackTrace(); }
-	}
-	
-	
-	
-	
-	public void addOperator(Operator operator) {
-		if (baseExpression == null) {
-			baseExpression = new ArithmeticExpression(operator);
-			return;
-		}
-		
-		addOperator(baseExpression, operator);
-	}
-	
-	
-	public void addValue(Double value) {
-		if (baseExpression == null)
-			return;
-		
-		addValue(baseExpression, value);
-	}
-	
-	public AbstractExpression build() {
-		return baseExpression;
-	}
-	
-	
-	synchronized public boolean canBuild() {
-		return isStreamFinished && expressionTokensQueue.isEmpty();
-	}
-	
+
 	
 	private boolean addOperator(AbstractExpression expression, Operator operator) {
 		if (expression == null || operator == null || operator == Operator.Nothing)
@@ -146,33 +175,6 @@ public class ExpressionBuilder implements IExpressionTokenStreamer {
 			return true;
 		
 		return false;
-	}
-
-
-	@Override
-	public void operatorAvailable(Operator operator) {
-		synchronized(this) {
-			expressionTokensQueue.add(operator);
-			analyzeToken();
-			// Commentiamo analyzeToken e vediamo la differenza di tempo
-		}
-	}
-
-
-	@Override
-	public void valueAvailable(Double value) {
-		synchronized(this) {
-			expressionTokensQueue.add(value);
-			analyzeToken();
-			// Commentiamo analyzeToken e vediamo la differenza di tempo
-		}
-	}
-
-	@Override
-	public void streamEnded() {
-		synchronized(this) {
-			isStreamFinished = true;
-		}
 	}
 
 }

@@ -16,13 +16,26 @@ public class StringExpressionParser {
 	
     private List<IExpressionTokenStreamer> listeners = new ArrayList<IExpressionTokenStreamer>();
     
-    private String filePath;
+    private String expressionLine;
     
     
     public StringExpressionParser() { }
     
     public StringExpressionParser(String filePath) {
-    	this.filePath = filePath;
+    	try {
+    		Scanner scanner = new Scanner(new File(filePath));
+    		if (!scanner.hasNextLine()){
+        		System.out.println("Error: " + filePath + " is empty.");
+        		scanner.close();
+        		return;
+        	}
+    		
+    		expressionLine = scanner.nextLine();
+    		scanner.close();
+    		
+    	} catch (Exception e) {
+    		System.out.println("Error: " + filePath + " doesn't exist.");
+    	}
     }
     
 
@@ -31,13 +44,11 @@ public class StringExpressionParser {
     }
 
     public void operatorAvailable(Operator operator) {
-    	System.out.println("operator available: " + operator);
     	for (IExpressionTokenStreamer listener : listeners)
             listener.operatorAvailable(operator);
     }
        
     public void valueAvailable(Double value) {
-    	System.out.println("value available: " + value);
     	for (IExpressionTokenStreamer listener : listeners)
             listener.valueAvailable(value);
     }
@@ -49,33 +60,17 @@ public class StringExpressionParser {
 
     
     public void parse() {
-    	if (filePath == null || filePath.isEmpty()) {
-    		System.out.println("Error: 'filePath' is empty");
+    	if (expressionLine == null || expressionLine.isEmpty()) {
+    		System.out.println("Error: 'expressionLine' is empty");
     		return;
     	}
-    		
-    	try {
-    		Scanner scanner = new Scanner(new File(filePath));
-    		if (!scanner.hasNextLine()){
-        		System.out.println("Error: " + filePath + " is empty.");
-        		scanner.close();
-        		return;
-        	}
-    		
-    		String line = scanner.nextLine();
-    		scanner.close();
-    		
-    		if (!ArithmeticExpression.IsValid(line)) {
-    			System.out.println("Error: " + line + " is an invalid expression.");
-    			return;
-    		}
-    		
-    		parse(line);
-    		
-    	} catch (Exception e) {
-    		System.out.println("Error: " + filePath + " doesn't exist.");
-    	}
-    	
+
+		if (!ArithmeticExpression.IsValid(expressionLine)) {
+			System.out.println("Error: " + expressionLine + " is an invalid expression.");
+			return;
+		}
+		
+		parse(expressionLine);
     }
     
 	
